@@ -1,0 +1,325 @@
+<%# КОРЗИНА %>
+<%# =========================================================================%>
+<section id="cart-items" class="mt-4">
+
+  <%# ЗАГОЛОВОК, ОЧИСТИТЬ %>
+  <%# =======================================================================%>
+  <div class="ml-80 w-[768px]">
+    <div class="flex justify-between items-center">
+        <h2 class="font-semibold text-[28px] leading-[40px] text-[#1E1E3C]">
+          Корзина
+        </h2>
+        
+        <%= form_with url: clear_path, method: :delete do |form| %>
+          <%= form.button "Очистить корзину", data: { confirm: "Are you sure?" 
+          }, class: "w-[125px] h-[20px] text-[14px] leading-[20px] 
+          text-gray-400 hover:text-gray-500 focus:text-gray-600" %>
+        <% end %>
+    </div>
+
+    <%# ТОВАРЫ.%>
+    <%# =====================================================================%>
+    <% @cart_items.each_with_index do |item, index| %>
+      <div class="flex items-center justify-between gap-7 
+      border-b-2 border-gray-100">
+
+        <%# ФОТО. %>
+        <%# =================================================================%>
+        <% if item.product.image.attached? %>
+          <%= image_tag(item.product.image, size: "100x100", class: "ml-2") %>
+        <% end %>
+
+        <%# НАИМЕНОВАНИЕ. %>
+        <%# =================================================================%>
+        <p class="text-sm text-gray-900 sm:w-1/4"><%= item.product.name %></p>
+
+        <%# КОЛИЧЕСТВО. %>
+        <%# =================================================================%>
+        <article id="cart-form-<%= index %>" 
+        class="flex justify-center space-x-4 w-full sm:w-1/4">
+          <div class="font-medium bg-gray-100 rounded">
+            <button type="button" id="decrease-button-<%= index %>" 
+            class="w-6 h-6 bg-sm hover:bg-gray-200 focus:bg-gray-300">
+              -
+            </button>
+            <span class="" id="quantity-span-<%= index %>" class="">1</span>
+            <input type="number" id="quantity-input-<%= index %>" 
+            name="quantity" value="1" min="1" readonly 
+            class="w-12 h-6 text-xs hidden">
+            <button type="button" id="increase-button-<%= index %>" 
+            class="w-6 h-6 text-sm hover:bg-gray-200 focus:bg-gray-300">
+              +
+            </button>
+          </div>
+        </article>
+
+        <div class="flex flex-col w-full sm:w-1/4">
+
+          <%# УДАЛИТЬ. %>
+          <%# ===============================================================%>
+          <%= form_with url: remove_cart_item_path(item.id), method: :delete,
+            local: true, class: "relative inline-block" do %>
+            <%= button_tag type: :submit, 
+            class: "absolute left-40 bottom-4 w-15 h-15" do %>            
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M13.6918 19.1667C14.9264 19.1667 15.72 18.4102 15.7761 17.1576L16.3213 5.437H17.2031C17.604 5.437 17.9166 5.11978 17.9166 4.7131C17.9166 4.31455 17.604 3.99733 17.2031 3.99733H13.6437V2.89115C13.6437 1.63856 12.7939 0.833328 11.423 0.833328H8.56095C7.19808 0.833328 6.34829 1.63856 6.34829 2.89115V3.99733H2.79682C2.40399 3.99733 2.08331 4.31455 2.08331 4.7131C2.08331 5.11978 2.40399 5.437 2.79682 5.437H3.68669L4.22382 17.1576C4.28795 18.4184 5.07361 19.1667 6.32424 19.1667H13.6918ZM12.1445 3.99733H7.85547V2.96435C7.86349 2.517 8.18416 2.19979 8.65716 2.19979H11.3348C11.8078 2.19979 12.1365 2.517 12.1365 2.96435L12.1445 3.99733ZM13.5154 17.7107H6.48461C6.04368 17.7107 5.72301 17.3773 5.69896 16.8974L5.16182 5.437H14.8222L14.3091 16.8974C14.285 17.3854 13.9724 17.7107 13.5154 17.7107ZM12.369 16.3768C12.6656 16.3768 12.8821 16.1247 12.8981 15.783L13.1386 7.44602C13.1466 7.1044 12.9142 6.84412 12.6175 6.84412C12.3289 6.84412 12.0884 7.11254 12.0804 7.43788L11.8399 15.7668C11.8319 16.1084 12.0563 16.3768 12.369 16.3768ZM7.63901 16.3768C7.94365 16.3768 8.17614 16.1084 8.16812 15.7668L7.92762 7.43788C7.91158 7.11254 7.67108 6.84412 7.39049 6.84412C7.08585 6.84412 6.86137 7.1044 6.86939 7.44602L7.1099 15.783C7.11791 16.1247 7.34239 16.3768 7.63901 16.3768ZM10.004 16.3768C10.2926 16.3768 10.5411 16.1084 10.5411 15.783V7.43788C10.5411 7.11254 10.3006 6.84412 10.004 6.84412C9.70738 6.84412 9.46688 7.11254 9.46688 7.43788V15.783C9.46688 16.1084 9.70738 16.3768 10.004 16.3768Z" fill="#C6CDD7"/>
+            </svg>
+            <% end %>
+          <% end %>
+
+          <%# ЦЕНА. %>
+          <%# ===============================================================%>
+          <p id="price-<%= index %>" class="price text-right font-medium">
+            <%= "#{item.product.price.to_i} ₽" %>
+          </p>
+          <input type="hidden" id="price-per-item-<%= index %>" 
+          value="<%= item.product.price.to_i %>">
+        </div>
+      </div>
+    <% end %>
+
+    <article class="border-2 border-gray-100 rounded-lg mt-8 p-4">
+
+      <div class="flex justify-between items-center">
+
+        <%# N ТОВАРОВ НА СУММУ. %>
+        <%# =================================================================%>
+        <p class="text-[14px] leading-[20px] text-gray-600" >
+          <%= @cart_items.length %> 
+          <%= sklonenie(@cart_items.length, "товар", "товара", "товаров") %>
+           на сумму 
+        </p>
+
+        <%# СУММА. %>
+        <%# =================================================================%>
+        <p id="total-price" class="total-price font-medium">
+          Total: 0 ₽
+        </p>
+      </div>
+
+      <%# СКИДКА. %>
+      <%# ===================================================================%>
+      <div class="flex justify-between items-center">
+        <p class="text-[14px] leading-[20px] text-gray-600">
+          Передвигая слайдер, укажите сумму скидки 
+        </p>
+        <label for="discount" class="text-[#4AD9BD] font-medium">
+          <span 
+            id="discount-value" >0
+          </span> ₽
+        </label>
+      </div>
+
+      <%# СЛАЙДЕР СКИДКИ. %>
+      <%# ===================================================================%>
+      <input class="w-full" type="range" id="discount" name="discount" 
+      min="0" max="1000" value="0" oninput=<%#"updateDiscount(this.value)"%>>
+      <div class="border-b-2 border-gray-100 mt-4 mb-4"></div>
+
+      <%# СУММА ЗАКАЗА. %>
+      <%# ===================================================================%>
+      <div class="flex justify-between items-center">
+        <p class="text-lg font-medium">Сумма заказа</p>
+        <p id="total-price-with-discount" class="total-price-with-discount 
+          font-medium">Итоговая сумма: 0 ₽
+        </p>
+      </div>
+
+    </article>
+
+    <%# ОФОРМИТЬ. %>
+    <%# =====================================================================%>
+    <article class="mt-8">
+      <%= form_with url: "/cart/clear", method: :delete, 
+        remote: true do |form| %><%= form.button "Оформить", 
+        data: { confirm: "Are you sure?" }, class: "flex flex-col 
+        items-center p-2.5 px-4 mb-20 w-[768px] h-[40px] font-medium 
+        bg-[#4AD9BD] hover:bg-teal-400 focus:bg-teal-500 rounded-lg 
+        flex-none order-3 self-stretch grow-0 text-white" %>
+      <% end %>
+    </article>
+  </div>
+</section>
+<%# =========================================================================%>
+
+<%# КОРЗИНА ПУСТА.%>
+<%# =========================================================================%>
+<section id="cart-empty" class="mt-4 hidden">
+  <div class="ml-80 w-[768px]">
+    <div class="flex justify-between items-center">
+        <h2 class="font-semibold text-[28px] leading-[40px] text-[#1E1E3C]">
+          Корзина
+        </h2>
+    </div>
+    <div class="flex flex-col items-center mt-20">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M41.4306 15.9402L47.4588 19.0373C47.7889 19.2074 47.9979 19.5447 48 19.9151C48.0019 20.2854 47.7988 20.6257 47.4706 20.8006L32.4707 28.7638C32.3242 28.8416 32.1621 28.8805 32 28.8805C31.8418 28.8805 31.6856 28.8436 31.541 28.7697L24 24.8957L16.4591 28.7697C16.3145 28.8436 16.1583 28.8805 16.0001 28.8805C15.838 28.8805 15.6759 28.8416 15.5293 28.7638L0.529418 20.8006C0.201294 20.6257 -0.00186081 20.2854 0.00010793 19.9151C0.00207667 19.5448 0.211044 19.2074 0.541136 19.0373L6.56923 15.9403L0.541043 12.8433C0.210951 12.6732 0.00198292 12.3358 1.41806e-05 11.9655C-0.00195456 11.5952 0.201201 11.2549 0.529324 11.08L15.5292 3.11676C15.8164 2.96314 16.166 2.96118 16.459 3.1109L24 6.98494L31.5409 3.1108C31.8339 2.96118 32.1796 2.96304 32.4706 3.11667L47.4706 11.0799C47.7987 11.2548 48.0018 11.5951 47.9999 11.9654C47.9979 12.3357 47.7889 12.6731 47.4588 12.8432L41.4306 15.9402ZM10.9308 15.9403L24 22.6548L37.0691 15.9402L24 9.22582L10.9308 15.9403Z" fill="#C6CDD7"/>
+        <path d="M22.5195 28.4323C22.2246 28.2525 21.8515 28.2399 21.5409 28.3983L17.3749 30.5389C16.5175 30.9802 15.4433 30.9725 14.5878 30.5194L9.47068 27.8025C9.16206 27.6391 8.78903 27.647 8.48631 27.8277C8.1836 28.0075 7.99994 28.3313 7.99994 28.6812V37.1028C7.99994 37.4703 8.2031 37.8086 8.52925 37.9816L21.5292 44.8833C21.6757 44.9611 21.8378 44.9999 21.9999 44.9999C22.1777 44.9999 22.3554 44.9523 22.5136 44.858C22.8163 44.6782 23 44.3545 23 44.0045V29.2829C23 28.9359 22.8184 28.6132 22.5195 28.4323Z" fill="#C6CDD7"/>
+        <path d="M38.5292 27.8025C38.8358 27.6391 39.2108 27.6469 39.5136 27.8277C39.8164 28.0076 39.9999 28.3313 39.9999 28.6813V37.1029C39.9999 37.4704 39.7968 37.8087 39.4706 37.9817L26.4708 44.8834C26.3242 44.9612 26.1621 45 26 45C25.8223 45 25.6446 44.9524 25.4864 44.8581C25.1836 44.6783 25 44.3546 25 44.0046V29.2829C25 28.9359 25.1816 28.6132 25.4805 28.4323C25.7754 28.2525 26.1484 28.2389 26.459 28.3983L30.625 30.5389C31.4804 30.9811 32.5566 30.9734 33.4121 30.5194L38.5292 27.8025Z" fill="#C6CDD7"/>
+      </svg>
+      <p class="w-[488px] h-[32px] font-semibold text-[22px] leading-[32px] 
+      text-[#1E1E3C] text-center flex-none order-0 grow-0">
+        В корзине нет товаров
+      </p>
+      <p class="w-[488px] h-[20px] text-[14px] leading-[20px] text-center 
+      text-[#515767] flex-none order-1 grow-0">
+        Добавьте товар из каталога
+      </p>
+    </div>
+
+  </div>
+</section>
+<%# ===========================================================================%>
+
+<%# ДЛЯ СЛАЙДЕРА СКИДКИ. %>
+<%# =================================================================%>
+<style>
+  input {
+    --c: #4AD9BD; /* Цвет активной области и заполнения */
+    --g: 0px; /* Расстояние */
+    --l: 5px; /* Толщина линии */
+    --s: 30px; /* Размер ползунка */
+    
+    width: 400px;
+    height: var(--s); /* Необходимо для Firefox */
+    --_c: color-mix(in srgb, var(--c), #000 var(--p,0%));
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  input:focus-visible,
+  input:hover {
+    --p: 15%;
+  }
+
+  input:active,
+  input:focus-visible {
+    --_b: var(--s);
+  }
+
+  /* Chromium */
+  input[type="range" i]::-webkit-slider-thumb {
+    height: var(--s);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    box-shadow: 0 0 0 var(--_b, var(--l)) inset var(--_c);
+    border-image: linear-gradient(90deg, var(--_c) 50%, #ababab 0) 0 1/calc(50% - var(--l)/2) 100vw/0 calc(100vw + var(--g));
+    -webkit-appearance: none;
+    appearance: none;
+    transition: .3s;
+  }
+
+  /* Firefox */
+  input[type="range"]::-moz-range-thumb {
+    height: var(--s);
+    width: var(--s);
+    background: none;
+    border-radius: 50%;
+    box-shadow: 0 0 0 var(--_b, var(--l)) inset var(--_c);
+    border-image: linear-gradient(90deg, var(--_c) 50%, #ababab 0) 0 1/calc(50% - var(--l)/2) 100vw/0 calc(100vw + var(--g));
+    -moz-appearance: none;
+    appearance: none;
+    transition: .3s;
+  }
+
+  @supports not (color: color-mix(in srgb, red, red)) {
+    input {
+      --_c: var(--c);
+    }
+  }
+</style>
+
+<script>
+  // РАСЧЁТ ОБЩЕЙ ЦЕНЫ И ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ.
+  // ==========================================================================
+
+  // ФУНКЦИЯ ДЛЯ РАСЧЁТА ОБЩЕЙ ЦЕНЫ.
+  // --------------------------------------------------------------------------
+  document.addEventListener('DOMContentLoaded', () => {
+    const getPrice = () => Array.from(document
+    .querySelectorAll('[id^="cart-form-"]')).reduce((total, form) => {
+      const index = form.id.split('-').pop();
+      const quantity = parseInt(document
+      .getElementById(`quantity-input-${index}`).value, 10);
+      const pricePerItem = parseInt(document
+      .getElementById(`price-per-item-${index}`).value, 10);
+      return total + (pricePerItem * quantity);
+    }, 0);
+
+    // ФУНКЦИЯ ДЛЯ ОБНОВЛЕНИЯ ЦЕН.
+    // ------------------------------------------------------------------------
+    const updatePrices = () => {
+      const totalPrice = getPrice();
+      const discount = parseInt(document.getElementById('discount').value, 10);
+      const discountedPrice = totalPrice -discount;
+      document.getElementById('total-price').textContent = `${totalPrice} ₽`;
+      document.getElementById('total-price-with-discount')
+      .textContent = `${Math.max(0, discountedPrice)} ₽`;
+    };
+
+    // ОБРАБОТКА ИЗМЕНЕНИЯ КОЛИЧЕСТВА ТОВАРОВ.
+    // ------------------------------------------------------------------------
+    document.querySelectorAll('[id^="cart-form-"]').forEach(form => {
+      const index = form.id.split('-').pop();
+      ['decrease', 'increase'].forEach(action => 
+        document.getElementById(`${action}-button-${index}`)
+        .addEventListener('click', () => {
+          const input = document.getElementById(`quantity-input-${index}`);
+          input.value = Math.max
+          (1, parseInt(input.value, 10) + (action === 'increase' ? 1 : -1));
+          document.getElementById(`price-${index}`)
+          .textContent = `${parseInt(document
+          .getElementById(`price-per-item-${index}`)
+          .value, 10) * parseInt(input.value, 10)} ₽`;
+          document.getElementById(`quantity-span-${index}`)
+          .textContent = input.value;
+          updatePrices();
+        })
+      );
+    });
+
+    // ОБРАБОТКА ИЗМЕНЕНИЯ ЗНАЧЕНИЯ СКИДКИ.
+    // ------------------------------------------------------------------------
+    document.getElementById('discount').addEventListener('input', () => {
+      document.getElementById('discount-value')
+      .textContent = document.getElementById('discount').value;
+      updatePrices();
+    });
+
+    // ИНИЦИАЛИЗАЦИЯ ОТОБРАЖЕНИЯ ЦЕН.
+    // ------------------------------------------------------------------------
+    updatePrices();
+  });
+
+  // ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ ЗНАЧЕНИЯ СКИДКИ.
+  // ==========================================================================
+  function updateDiscount(value) {
+    document.getElementById('discount-value').textContent = value;
+  }
+  document.getElementById('discount').addEventListener('input', function() {
+    updateDiscount(this.value);
+  });
+
+  // ПОКАЗ/СКРЫТИЕ ЭЛЕМЕНТОВ КОРЗИНЫ В ЗАВИСИМОСТИ ОТ НАЛИЧИЯ ТОВАРОВ.
+  // ==========================================================================
+  document.addEventListener("DOMContentLoaded", function() {
+    var cartItems = <%= @cart_items.length %>;
+
+    if (cartItems > 0) {
+      document.getElementById('cart-items').classList.remove('hidden');
+      document.getElementById('cart-empty').classList.add('hidden');
+    } else {
+      document.getElementById('cart-items').classList.add('hidden');
+      document.getElementById('cart-empty').classList.remove('hidden');
+    }
+  });
+
+  document.querySelectorAll('button').forEach(button =>
+    button.addEventListener('click', () => document.activeElement.blur())
+  );
+</script>
+
