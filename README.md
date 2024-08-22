@@ -14,7 +14,7 @@
 ### Интрукция для Linux
 
 0. Откройте консоль
-1. Клонируйте репозиторий: `git clone https://github.com/IvanGaevskiy/api_for_weather_statistics`
+1. Клонируйте репозиторий: `git clone https://github.com/IvanGaevskiy/shopping-cart-for-an-online-store`
 2. Перейдите в папку репозитория
 3. Запустите контейнер с приложением: `docker-compose up --build`
 - Или если ваша версия руби сооветствует указанной,
