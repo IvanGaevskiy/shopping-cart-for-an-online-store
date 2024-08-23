@@ -25,6 +25,9 @@
 # Ignore uploaded files in development.
 /storage/*
 !/storage/.keep
+!/storage/board.jpg
+!/storage/hoodie.jpg
+!/storage/robot.jpg
 /tmp/storage/*
 !/tmp/storage/
 !/tmp/storage/.keep
